@@ -14,8 +14,10 @@ Including:
   
 - Analysis jupyter notebooks: [:point_right::open_file_folder::point_left:](notebooks) including:
   - Generating simulation input scripts
+     - [x] Packmol to VASP/LAMMPS
+     - [x] LAMMPS to VASP
   - Simulation output visualization and analysis
-   - General information monitering
-   - Water formation identification
-   - Pair distribustion function and coordination function calculation
-   - Other
+     - [x] General information monitering
+     - [x] Water formation identification
+     - [x] Pair distribustion function and coordination function calculation
+     - [x] Other
