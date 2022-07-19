@@ -1,0 +1,93 @@
+# LiCl relax
+
+echo						log
+units						real
+boundary				p p p 
+
+######### Read coordinates and define potentials
+atom_style			full
+pair_style    lj/cut/coul/long 9.0 9.0
+pair_modify   table 0
+bond_style      harmonic
+angle_style     harmonic
+atom_modify   map array
+
+read_data	data.LiCl
+
+pair_coeff 1 1 0.07647 2.126 # Li
+pair_coeff 2 2 0.4928 4.417 # Cl
+pair_coeff 3 3 0.1553 3.166      # O
+pair_coeff 4 4 0.0460    0.4000      # H
+pair_coeff 3 4 0.0    0.0 #OH
+
+bond_coeff  1 1000.0 1.0
+angle_coeff 1 1000 109.47     # H-O-H
+
+
+suffix off
+newton on
+kspace_style  ewald 1.0e-5
+suffix on
+
+
+variable        dt equal 0.1            # Stepsize (in fs)
+variable        T equal 297            # Temperature (K)
+variable        Tdamp equal 5000*${dt}   # Thermostat damping time (fs)
+
+timestep	${dt}
+
+set type 1 charge  1
+set type 2 charge  -1
+set type 3 charge -0.8476
+set type 4 charge  0.4238
+
+mass 1 6.941
+mass 2 35.45
+mass 3 15.999
+mass 4 1.00784
+
+
+#Define Variables 
+variable    	kB equal 1.3806504e-23    # [J/K] Boltzmann
+variable    	eV2J equal 1.6e-19 
+variable    	A2m equal 1.0e-10
+variable    	ps2s equal 1.0e-12
+
+
+group 		WATER type 3 4
+group 		OXY type 3
+group 		HYD type 4
+
+#fix 		water_shake WATER shake 0.0001 20 10 b 1 a 1 t 3 4
+
+dump 	      XMOL all xyz 1 minimize.xyz
+dump_modify   XMOL element Li Cl O H
+
+thermo        500
+thermo_style  custom step etotal ke pe temp evdwl ecoul elong press
+thermo_modify format float "%.15g"
+
+
+minimize      1.0e-10 1.0e-12 1000 10000
+undump	XMOL
+
+fix             water_shake WATER shake 0.0001 20 10 b 1 a 1 t 3 4
+
+dump          XMOL all xyz 200 roomTemp.xyz
+dump_modify   XMOL element Li Cl O H
+
+variable	Tdamp_ANNEAL	equal	${Tdamp}*3
+fix             ANNEAL all nvt temp 5.0 ${T} ${Tdamp_ANNEAL}
+variable	Nrun	equal	500*${Tdamp}*3/${dt}
+run             ${Nrun}
+unfix           ANNEAL
+
+undump  XMOL
+
+dump          XMOL all xyz 200 equ.xyz
+dump_modify   XMOL element Li Cl O H
+
+fix             ENSEMBLE all nvt temp ${T} ${T} ${Tdamp_ANNEAL}
+run             ${Nrun}
+
+

@@ -1,0 +1,21 @@
+#!/bin/bash -l
+#SBATCH --nodes=1
+#SBATCH --ntasks=16
+#SBATCH --mem-per-cpu=4gb
+#SBATCH --time=480:00:00
+#SBATCH --output=output.log
+#SBATCH --job-name=less_mem
+##SBATCH -e error.log
+##SBATCH -p greaneylab,intel,batch
+#SBATCH -p batch
+
+cd $SLURM_SUBMIT_DIR
+
+module load intel
+source /opt/linux/centos/7.x/x86_64/pkgs/intel/2018/bin/compilervars.sh intel64
+source /opt/linux/centos/7.x/x86_64/pkgs/intel/2018/bin/iccvars.sh intel64
+source /opt/linux/centos/7.x/x86_64/pkgs/intel/2018/bin/ifortvars.sh intel64
+source /opt/linux/centos/7.x/x86_64/pkgs/intel/2018/compilers_and_libraries_2018.0.128/linux/mkl/bin/mklvars.sh intel64
+
+ulimit -s unlimited
+mpirun -np 16 ~/../shared/Codes/vasp.5.4.1-sarah/bin/vasp_std

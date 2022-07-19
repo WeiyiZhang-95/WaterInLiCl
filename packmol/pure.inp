@@ -1,0 +1,17 @@
+tolerance 2.0
+
+filetype xyz
+
+output LiCl_H2O_25_06.xyz
+
+seed -1
+
+structure LiCl.xyz
+  number 13
+  inside box 0. 0. 0. 12.5000000000020002  12.6999999999999993 12.5000000000000302
+end structure
+
+structure H2O.xyz
+  number 92
+  inside box 0. 0. 0. 12.5000000000020002  12.6999999999999993 12.5000000000000302
+end structure

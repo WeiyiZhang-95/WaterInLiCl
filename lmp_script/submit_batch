@@ -1,0 +1,16 @@
+#!/bin/bash -l
+#SBATCH -p batch
+#SBATCH --nodes=1
+#SBATCH --nodelist=c04
+#SBATCH --ntasks=1
+#SBATCH --mem=10gb
+##SBATCH --time=96:00:00
+##SBATCH --job-name=jupyter-notebook
+
+
+echo "$(date)" > TIMING
+source /rhome/wzhan097/.bashrc
+source /rhome/wzhan097/.bashrc_ML_gpu
+
+/rhome/wzhan097/shared/bin/lmp_mpi < in.LiCl_water
+echo "$(date)" >> TIMING
